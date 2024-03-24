@@ -1,0 +1,145 @@
+---
+title: "Getting stared"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting stared}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+library(simulatetimeseries)
+```
+
+# `simulate_time_series_1`
+
+```{r, fig.width=7.5}
+# Example usage:
+
+n_series <- 100
+
+par(mfrow = c(1, 2))
+set.seed(2134)
+ts_data <-
+  simulate_time_series_1(
+    n = n_series,
+    trend = "quadratic",
+    seasonality = "sinusoidal",
+    noise_sd = 2500,
+    distribution = "normal"
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+ts_data <-
+  simulate_time_series_1(
+    n = n_series,
+    trend = "linear",
+    seasonality = "sinusoidal",
+    noise_sd = 50,
+    distribution = "normal"
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+
+
+par(mfrow = c(1, 2))
+ts_data <-
+  simulate_time_series_1(
+    n = n_series,
+    trend = "quadratic",
+    seasonality = "sinusoidal",
+    noise_sd = 2500,
+    distribution = "student"
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+ts_data <-
+  simulate_time_series_1(
+    n = n_series,
+    trend = "linear",
+    seasonality = "sinusoidal",
+    noise_sd = 10,
+    distribution = "student"
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+
+par(mfrow = c(1, 2))
+ts_data <-
+  simulate_time_series_1(
+    n = n_series,
+    trend = "quadratic",
+    seasonality = "none",
+    noise_sd = 2500,
+    distribution = "student"
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+ts_data <-
+  simulate_time_series_1(
+    n = n_series,
+    trend = "quadratic",
+    seasonality = "sinusoidal",
+    noise_sd = 2500,
+    distribution = "student"
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+```
+
+# `simulate_time_series_2`
+
+```{r, fig.width=7.5}
+par(mfrow = c(1, 2))
+ts_data <-
+  simulate_time_series_2(
+    n = n_series,
+    trend = "sinusoidal",
+    seasonality = TRUE,
+    noise_sd = runif(n = 1, min = 20, max=50)
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+ts_data <-
+  simulate_time_series_2(
+    n = n_series,
+    trend = "linear",
+    seasonality = TRUE,
+    noise_sd = runif(n = 1,
+                     min = 20,
+                     max=50)
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+ts_data <-
+  simulate_time_series_2(
+    n = n_series,
+    trend = "sinusoidal",
+    seasonality = FALSE,
+    noise_sd = runif(n = 1, min = 20, max=50)
+  )
+```
+
+```{r, fig.width=7.5}
+par(mfrow = c(1, 2))
+ts_data <-
+  simulate_time_series_2(
+    n = n_series,
+    trend = "sinusoidal",
+    seasonality = FALSE,
+    noise_sd = runif(n = 1, min = 20, max=50)
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+ts_data <-
+  simulate_time_series_2(
+    n = n_series,
+    trend = "linear",
+    seasonality = FALSE,
+    noise_sd = runif(n = 1,
+                     min = 20,
+                     max=50)
+  )
+plot(ts_data, type = "l", main = "Simulated Time Series")
+```
+
+# `simulate_time_series_3`
+
+```{r, fig.width=7.5}
+ts_data <- simulate_time_series_3(n = n_series)
+ts_data2 <- simulate_time_series_3(n = n_series)
+par(mfrow=c(1, 2))
+plot(ts_data, type = "l", main = "Simulated Time Series")
+plot(ts_data2, type = "l", main = "Simulated Time Series")
+```
