@@ -10,7 +10,8 @@ simulate_time_series_2(
   seasonality = FALSE,
   noise_sd = 0.1,
   ar = 0,
-  ma = 0
+  ma = 0,
+  seed = 123
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ simulate_time_series_2(
 \item{ar}{autoregressive order}
 
 \item{ma}{moving average order}
+
+\item{seed}{int, reproducibility seed}
 }
 \value{
 a native time series object

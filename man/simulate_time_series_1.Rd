@@ -9,7 +9,8 @@ simulate_time_series_1(
   trend = c("linear", "quadratic"),
   seasonality = c("none", "sinusoidal"),
   distribution = c("normal", "student"),
-  noise_sd = 10
+  noise_sd = 10,
+  seed = 123
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ simulate_time_series_1(
 \item{distribution}{string, "normal" and "student"}
 
 \item{noise_sd}{numerical, standard deviation of noise}
+
+\item{seed}{int, reproducibility seed}
 }
 \value{
 a native time series object

@@ -4,10 +4,12 @@
 \alias{simulate_time_series_3}
 \title{Simulate a univariate time series dataset 3}
 \usage{
-simulate_time_series_3(n = 100)
+simulate_time_series_3(n = 100, seed = 123)
 }
 \arguments{
 \item{n}{numerical, number of data points}
+
+\item{seed}{int, reproducibility seed}
 }
 \value{
 a native time series object

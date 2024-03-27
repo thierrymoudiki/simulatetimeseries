@@ -5,6 +5,7 @@
 #' @param seasonality string, "none" or "sinusoidal"
 #' @param distribution string, "normal" and "student"
 #' @param noise_sd numerical, standard deviation of noise
+#' @param seed int, reproducibility seed
 #'
 #' @return a native time series object
 #' @export
@@ -28,7 +29,8 @@ simulate_time_series_1 <- function(n,
                                                    "sinusoidal"),
                                    distribution = c("normal",
                                                     "student"),
-                                   noise_sd = 10) {
+                                   noise_sd = 10,
+                                   seed = 123) {
   trend <- match.arg(trend)
   seasonality <- match.arg(seasonality)
   distribution <- match.arg(distribution)
@@ -82,6 +84,7 @@ simulate_time_series_1 <- function(n,
 #' @param noise_sd numerical, standard deviation of noise
 #' @param ar autoregressive order
 #' @param ma moving average order
+#' @param seed int, reproducibility seed
 #'
 #' @return a native time series object
 #' @export
@@ -103,7 +106,8 @@ simulate_time_series_2 <- function(n,
                                    seasonality = FALSE,
                                    noise_sd = 0.1,
                                    ar = 0,
-                                   ma = 0) {
+                                   ma = 0,
+                                   seed = 123) {
 
   trend <- match.arg(trend)
   # Generate base series
@@ -148,6 +152,7 @@ simulate_time_series_2 <- function(n,
 #' Simulate a univariate time series dataset 3
 #'
 #' @param n numerical, number of data points
+#' @param seed int, reproducibility seed
 #'
 #' @return a native time series object
 #' @export
@@ -156,7 +161,8 @@ simulate_time_series_2 <- function(n,
 #'
 #' print(simulate_time_series_3(10))
 #'
-simulate_time_series_3 <- function(n=100)
+simulate_time_series_3 <- function(n=100,
+                                   seed = 123)
 {
   xi <- rnorm(n, mean = 0, sd = sqrt(0.01))
   eps <- rep(0, 100)
@@ -166,4 +172,36 @@ simulate_time_series_3 <- function(n=100)
   trend <- seq_along(100)
   season_term <- 2 * pi * trend / 180
   return(ts(cos(season_term) + sin(season_term) + 0.01 * trend + eps))
+}
+
+
+
+
+
+#' Simulate a univariate time series dataset 4
+#'
+#' @param n numerical, number of data points
+#' @param psi 1st parameter for innovation variance ()
+#' @param xi 2nd parameter for innovation variance
+#' @param seed int, reproducibility seed
+#'
+#' @return a native time series object
+#' @export
+#'
+#' @examples
+#'
+#' plot(simulate_time_series_4())
+#'
+simulate_time_series_4 <- function(n = 100,
+                                   psi = 0.1,
+                                   xi = 0.1,
+                                   seed = 123) {
+  set.seed(seed)
+  s <- 10
+  innov_scale <- sqrt(s * (1 - psi**2) / (1 + 2 * psi * xi + xi**2))
+  X <- matrix(runif(6 * n), ncol = 6, nrow = n)
+  colnames(X) <- paste0("X", 1:6)
+  epsilon <- arima.sim(n = n, model = list(ar = psi, ma = xi), sd = innov_scale)
+  mu <- 10 * sin(pi * X[,1] * X[,2]) + 20 * (X[,3] - 0.5)**2 + 10 * X[,4] + 5 * X[,5]
+  return(mu + epsilon)
 }
