@@ -205,3 +205,106 @@ simulate_time_series_4 <- function(n = 100,
   mu <- 10 * sin(pi * X[,1] * X[,2]) + 20 * (X[,3] - 0.5)**2 + 10 * X[,4] + 5 * X[,5]
   return(mu + epsilon)
 }
+
+
+#' Get data 1
+#'
+#' Data from Task Views + synthetic
+#'
+#' @param diffs return the differentiated series or not? (lag = 1)
+#'
+#' @return a list of time series objects
+#' @export
+#'
+#' @examples
+get_data_1 <- function(diffs = TRUE)
+{
+  pkg_names <- c("astsa",
+                 "datasets",
+                 "expsmooth",
+                 "fma",
+                 "forecast",
+                 "fpp",
+                 "fpp2",
+                 "MASS",
+                 "tswge")
+
+  require("ahead")
+  require("astsa")
+  require("datasets")
+  require("expsmooth")
+  require("fma")
+  require("forecast")
+  require("fpp")
+  require("fpp2")
+  require("MASS")
+  require("tswge")
+
+  # real-world data
+  suppressWarnings(utils::install.packages(pkg_names,
+                                           repos="https://cran.r-project.com"))
+  dataset_objs <- vector("list", 250L)
+  for (pkg in pkg_names)
+  {
+    exported_objects <- ls(paste0("package:", pkg),
+                           all.names = TRUE)
+    if (identical(diffs, FALSE))
+    {
+      for (obj_name in exported_objects) {
+        obj <- get(obj_name,
+                   envir = asNamespace(pkg))
+        if (is.ts(obj) && is.null(dim(obj))) { # univariate ts
+          if (!check_list_contains(dataset_objs, obj)) # no duplicates
+          {
+            dataset_objs[[obj_name]] <-  removenas(obj)
+          }
+        }
+      }
+    } else {
+      for (obj_name in exported_objects) {
+        obj <- get(obj_name,
+                   envir = asNamespace(pkg))
+        if (is.ts(obj) && is.null(dim(obj))) { # univariate ts
+          if (!check_list_contains(dataset_objs, obj)) # no duplicates
+          {
+            dataset_objs[[obj_name]] <-  diff(removenas(obj))
+          }
+        }
+      }
+    }
+  }
+  dataset_objs[sapply(dataset_objs, is.null)] <- NULL
+  # synthetic data
+  n_synthetic <- 250 - length(dataset_objs)
+  synthetic <- vector("list", n_synthetic)
+  if (identical(diffs, FALSE))
+  {
+    for (j in 1:n_synthetic)
+    {
+      set.seed(123+j*100)
+      xi <- rnorm(100, mean = 0, sd = sqrt(0.01))
+      eps <- rep(0, 100)
+      for (i in 2:100) {
+        eps[i] <- 0.99 * eps[i - 1] + xi[i]
+      }
+      trend <- seq_along(100)
+      season_term <- 2 * pi * trend / 180
+      synthetic[[j]] <- ts(cos(season_term) + sin(season_term) + 0.01 * trend + eps)
+    }
+  } else {
+    for (j in 1:n_synthetic)
+    {
+      set.seed(123+j*100)
+      xi <- rnorm(100, mean = 0, sd = sqrt(0.01))
+      eps <- rep(0, 100)
+      for (i in 2:100) {
+        eps[i] <- 0.99 * eps[i - 1] + xi[i]
+      }
+      trend <- seq_along(100)
+      season_term <- 2 * pi * trend / 180
+      synthetic[[j]] <- diff(ts(cos(season_term) + sin(season_term) + 0.01 * trend + eps))
+    }
+  }
+
+  return(c(dataset_objs, synthetic))
+}
