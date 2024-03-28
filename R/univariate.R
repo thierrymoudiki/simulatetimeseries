@@ -181,8 +181,8 @@ simulate_time_series_3 <- function(n=100,
 #' Simulate a univariate time series dataset 4
 #'
 #' @param n numerical, number of data points
-#' @param psi 1st parameter for innovation variance ()
-#' @param xi 2nd parameter for innovation variance
+#' @param psi 1st parameter for innovation variance (in [0, 1])
+#' @param theta 2nd parameter for innovation variance (in [0, 1])
 #' @param seed int, reproducibility seed
 #'
 #' @return a native time series object
@@ -192,16 +192,16 @@ simulate_time_series_3 <- function(n=100,
 #'
 #' plot(simulate_time_series_4())
 #'
-simulate_time_series_4 <- function(n = 100,
+simulate_time_series_4 <- function(n = 600,
                                    psi = 0.1,
-                                   xi = 0.1,
+                                   theta = 0.1,
                                    seed = 123) {
   set.seed(seed)
   s <- 10
-  innov_scale <- sqrt(s * (1 - psi**2) / (1 + 2 * psi * xi + xi**2))
+  innov_scale <- sqrt(s * (1 - psi**2) / (1 + 2 * psi * theta + theta**2))
   X <- matrix(runif(6 * n), ncol = 6, nrow = n)
   colnames(X) <- paste0("X", 1:6)
-  epsilon <- arima.sim(n = n, model = list(ar = psi, ma = xi), sd = innov_scale)
+  epsilon <- arima.sim(n = n, model = list(ar = psi, ma = theta), sd = innov_scale)
   mu <- 10 * sin(pi * X[,1] * X[,2]) + 20 * (X[,3] - 0.5)**2 + 10 * X[,4] + 5 * X[,5]
   return(mu + epsilon)
 }
@@ -305,6 +305,7 @@ get_data_1 <- function(diffs = TRUE)
       synthetic[[j]] <- diff(ts(cos(season_term) + sin(season_term) + 0.01 * trend + eps))
     }
   }
+  names(synthetic) <- paste0("synth", 1:n_synthetic)
 
   return(c(dataset_objs, synthetic))
 }

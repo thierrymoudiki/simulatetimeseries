@@ -4,14 +4,14 @@
 \alias{simulate_time_series_4}
 \title{Simulate a univariate time series dataset 4}
 \usage{
-simulate_time_series_4(n = 100, psi = 0.1, xi = 0.1, seed = 123)
+simulate_time_series_4(n = 600, psi = 0.1, theta = 0.1, seed = 123)
 }
 \arguments{
 \item{n}{numerical, number of data points}
 
-\item{psi}{1st parameter for innovation variance ()}
+\item{psi}{1st parameter for innovation variance (in [0, 1])}
 
-\item{xi}{2nd parameter for innovation variance}
+\item{theta}{2nd parameter for innovation variance (in [0, 1])}
 
 \item{seed}{int, reproducibility seed}
 }
