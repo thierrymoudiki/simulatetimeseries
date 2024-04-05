@@ -33,6 +33,15 @@ check_list_contains <- function(list_elts, new_elt)
 }
 check_list_contains <-  compiler::cmpfun(check_list_contains)
 
+# debug print -----
+#' @export
+debug_print <- function(x) {
+  cat("\n")
+  print(paste0(deparse(substitute(x)), "'s value:"))
+  print(x)
+  cat("\n")
+}
+
 
 # remove NAs by linear interpolation
 #' @export
