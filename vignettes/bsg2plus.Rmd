@@ -22,18 +22,37 @@ suppressPackageStartupMessages({
 ```{r, fig.width=7.5, warning=FALSE, message=FALSE}
  require(esgtoolkit)
 
- sims <- simulatetimeseries::simulate_bsg2plus(t0=2, n=100L,
+ sims <- simulatetimeseries::simulate_bsg2plus(t0=1L, n=100L,
  horizon = 10L)
 
  par(mfrow=c(1,2))
- esgtoolkit::esgplotbands(sims$discount_bond_prices, main="Discount bond prices", xlab="Maturity", ylab="Prices")
- esgtoolkit::esgplotbands(window(sims$discount_rates, start=2), main="Discount rates", xlab="Maturity", ylab="Rates")
+ plot(sims$maturities, 
+      sims$initial_discount_bonds, 
+      type="l",
+      main="Discount bonds prices", 
+      xlab="Maturity", ylab="Prices")
+ plot(sims$maturities, 
+      sims$initial_zero_rates, 
+      type="l",
+      main="Discount rates", 
+      xlab="Maturity", ylab="Rates")
+```
+
+
+```{r, fig.width=7.5, warning=FALSE, message=FALSE}
+par(mfrow=c(1,2))
+ esgtoolkit::esgplotbands(sims$discount_bond_prices, main="Discount bond prices (at t=1)", xlab="Maturity", ylab="Prices")
+ esgtoolkit::esgplotbands(window(sims$discount_rates, start=2), main="Discount rates (at t=1)", xlab="Maturity", ylab="Rates")
 ```
 
 ```{r, fig.width=7.5, warning=FALSE, message=FALSE}
 par(mfrow=c(1,2))
- esgtoolkit::esgplotbands(sims$asset_price, main="Asset prices", xlab="Horizon", ylab="Prices")
- esgtoolkit::esgplotbands(sims$short_rate, main="Short rates", xlab="Horizon", ylab="Rates")
+ esgtoolkit::esgplotbands(sims$asset_price, 
+                          main="Asset prices", 
+                          xlab="Horizon", ylab="Prices")
+ esgtoolkit::esgplotbands(sims$short_rate, 
+                          main="Short rates", 
+                          xlab="Horizon", ylab="Rates")
 
 ```
 

@@ -39,6 +39,7 @@ simulate_bsg2plus <- function(n = 100L,
   freq <- "annual"
 
   # Observed time-to-maturities
+  t0 <- t0 + 1
   stopifnot(t0 >= 1)
   stopifnot(horizon >= 1)
   stopifnot(is.numeric(t0) && (floor(t0) == t0))
