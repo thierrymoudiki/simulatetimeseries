@@ -1,0 +1,39 @@
+---
+title: "BSG2++"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{BSG2++}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+utils::install.packages("remotes", repos="https://cloud.r-project.org", quiet = TRUE)
+remotes::install_github("Techtonique/esgtoolkit")
+
+suppressPackageStartupMessages({
+  library(esgtoolkit)
+  library(simulatetimeseries)
+})
+```
+
+# `simulate_bsg2plus`
+
+```{r, fig.width=7.5, warning=FALSE, message=FALSE}
+ require(esgtoolkit)
+
+ sims <- simulatetimeseries::simulate_bsg2plus(t0=2, n=100L,
+ horizon = 10L)
+
+ par(mfrow=c(1,2))
+ esgtoolkit::esgplotbands(sims$discount_bond_prices, main="Discount bond prices", xlab="Maturity", ylab="Prices")
+ esgtoolkit::esgplotbands(window(sims$discount_rates, start=2), main="Discount rates", xlab="Maturity", ylab="Rates")
+```
+
+```{r, fig.width=7.5, warning=FALSE, message=FALSE}
+par(mfrow=c(1,2))
+ esgtoolkit::esgplotbands(sims$asset_price, main="Asset prices", xlab="Horizon", ylab="Prices")
+ esgtoolkit::esgplotbands(sims$short_rate, main="Short rates", xlab="Horizon", ylab="Rates")
+
+```
+
