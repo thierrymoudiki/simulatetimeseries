@@ -1,0 +1,20 @@
+---
+title: "Max Entropy Bootstrap"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Max Entropy Bootstrap}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+library(simulatetimeseries)
+```
+
+
+```{r, fig.width = 7.5}
+res <- simulatetimeseries::meboot(AirPassengers)
+matplot(res$ensemble, type='l')
+```
+
+
