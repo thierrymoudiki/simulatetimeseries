@@ -1,0 +1,34 @@
+Package: simulatetimeseries
+Type: Package
+Title: Time Series dataset collection (real-world and synthetic)
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "T.", "Moudiki",
+      email = "thierry.moudiki@gmail.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: Collection of functions for simulating various types of time series data
+    and accessing real-world time series datasets.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports:
+    stats,
+    utils,
+    ahead,
+    astsa,
+    expsmooth,
+    fma,
+    forecast,
+    fpp,
+    fpp2,
+    MASS,
+    tswge,
+    Rcpp
+LinkingTo: Rcpp
+Suggests: rugarch, keras3, tensorflow
+RoxygenNote: 7.3.2
+Depends: 
+    R (>= 3.5)

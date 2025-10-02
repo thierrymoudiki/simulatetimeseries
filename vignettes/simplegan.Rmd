@@ -1,0 +1,198 @@
+---
+title: "Simple GAN"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simple GAN}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+library(simulatetimeseries)
+require(keras3)
+require(tensorflow)
+```
+
+
+```{r cache=TRUE, fig.width = 7.5}
+# ============================================================================
+# 1 - UNIMODAL ----
+# ============================================================================
+
+N <- 1000
+train_dat <- matrix(rnorm(n = N, mean = 2, sd = 4))
+
+# Architecture functions
+generator_unimodal <- function(latent_dim = 1) {
+  keras_model_sequential(input_shape = latent_dim, name = "seq_gen") |> 
+    layer_dense(units = 1, activation = "linear")
+}
+
+discriminator_unimodal <- function(dim = 1) {
+  keras_model_sequential(input_shape = dim, name = "seq_disc") |> 
+    layer_dense(units = 8, activation = "relu") |>
+    layer_dense(units = 1, activation = "sigmoid")
+}
+
+summary(generator_unimodal())
+summary(discriminator_unimodal())
+
+# Train
+start <- proc.time()[3]
+result1 <- train_gan(
+  train_dat = train_dat,
+  generator_fn = generator_unimodal,
+  discriminator_fn = discriminator_unimodal,
+  n_iter = 5,
+  epochs_per_iter = 30,
+  num_resamples = 500
+)
+print(paste0("Elapsed ", proc.time()[3] - start))
+plot(density(train_dat))
+lines(density(result1$resamples), col="red")
+
+all.equal(result1$resamples, train_gan(
+  train_dat = train_dat,
+  generator_fn = generator_unimodal,
+  discriminator_fn = discriminator_unimodal,
+  n_iter = 5,
+  epochs_per_iter = 30,
+  num_resamples = 500
+)$resamples)
+```
+
+```{r cache=TRUE, fig.width = 7.5}
+# ============================================================================
+# 2 - MIXTURE ----
+# ============================================================================
+
+set.seed(123)
+
+mixture <- rbinom(N, 1, 0.5)
+train_dat <- matrix(mixture * rnorm(N, 2, 1) + (1 - mixture) * rnorm(N, 8, 2))
+
+# Architecture functions
+generator_mixture <- function(latent_dim = 1) {
+  keras_model_sequential(input_shape = latent_dim, name = "seq_gen") |> 
+    layer_dense(units = 16, activation = "relu") |>
+    layer_dense(units = 1, activation = "linear")
+}
+
+discriminator_mixture <- function(dim = 1) {
+  keras_model_sequential(input_shape = dim, name = "seq_disc") |> 
+    layer_dense(units = 32, activation = "relu") |>
+    layer_dense(units = 16, activation = "relu") |>
+    layer_dense(units = 1, activation = "sigmoid")
+}
+
+summary(generator_mixture())
+summary(discriminator_mixture())
+
+par(mfrow=c(1, 2))
+# Train
+start <- proc.time()[3]
+result1 <- train_gan(
+  train_dat = train_dat,
+  generator_fn = generator_unimodal,
+  discriminator_fn = discriminator_unimodal,
+  n_iter = 5,
+  epochs_per_iter = 30,
+  num_resamples = 500
+)
+print(paste0("Elapsed ", proc.time()[3] - start))
+plot(density(train_dat))
+lines(density(result1$resamples), col="red")
+# Train
+start <- proc.time()[3]
+result2 <- train_gan(
+  train_dat = train_dat,
+  generator_fn = generator_mixture,
+  discriminator_fn = discriminator_mixture,
+  n_iter = 5,
+  epochs_per_iter = 100,
+  num_resamples = 500
+)
+print(paste0("Elapsed ", proc.time()[3] - start))
+plot(density(train_dat))
+lines(density(result2$resamples), col="red")
+```
+
+```{r cache=TRUE, fig.width = 7.5}
+# ============================================================================
+# 3 - GARCH ----
+# ============================================================================
+
+# GARCH
+library(rugarch)
+
+## dmbp 
+data(dmbp)
+x <- as.matrix(dmbp[seq_len(500), 1])
+forecast::checkresiduals(drop(x))
+start <- proc.time()[3]
+result1 <- train_gan(
+  train_dat = x,
+  generator_fn = generator_unimodal,
+  discriminator_fn = discriminator_unimodal,
+  n_iter = 5,
+  epochs_per_iter = 30,
+  num_resamples = 500
+)
+print(paste0("Elapsed ", proc.time()[3] - start))
+# Train
+start <- proc.time()[3]
+result2 <- train_gan(
+  train_dat = x,
+  generator_fn = generator_mixture,
+  discriminator_fn = discriminator_mixture,
+  n_iter = 5,
+  epochs_per_iter = 100,
+  num_resamples = 500
+)
+print(paste0("Elapsed ", proc.time()[3] - start))
+ks.test(x, result1$resamples)
+ks.test(x, result2$resamples)
+par(mfrow=c(1, 2))
+plot(density(x))
+lines(density(result1$resamples), col="red")
+plot(density(x))
+lines(density(result2$resamples), col="red")
+
+## more examples
+
+for (i in seq_len(4))
+{
+  cat("iteration i: ", i, "=====================")
+  x <- as.matrix(diff(log(EuStockMarkets[seq_len(500), i])))
+  forecast::checkresiduals(drop(x))
+  start <- proc.time()[3]
+  result1 <- train_gan(
+    train_dat = x,
+    generator_fn = generator_unimodal,
+    discriminator_fn = discriminator_unimodal,
+    n_iter = 5,
+    epochs_per_iter = 30,
+    num_resamples = 500
+  )
+  print(paste0("Elapsed ", proc.time()[3] - start))
+  # Train
+  start <- proc.time()[3]
+  result2 <- train_gan(
+    train_dat = x,
+    generator_fn = generator_mixture,
+    discriminator_fn = discriminator_mixture,
+    n_iter = 5,
+    epochs_per_iter = 100,
+    num_resamples = 500
+  )
+  print(paste0("Elapsed ", proc.time()[3] - start))
+  print(ks.test(x, result1$resamples))
+  print(ks.test(x, result2$resamples))
+  par(mfrow=c(1, 2))
+  plot(density(x))
+  lines(density(result1$resamples), col="red")
+  plot(density(x))
+  lines(density(result2$resamples), col="red")
+}
+```
+
