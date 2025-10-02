@@ -22,15 +22,15 @@ gan <- keras3::new_model_class(
     list(self$d_loss_metric, self$g_loss_metric)
   }),
   train_step = function(real_data) {
-    batch_size <- tf$shape(real_data)[1]
-    random_latent_vectors <- tf$random$normal(shape = c(batch_size, self$latent_dim))
+    batch_size <- tensorflow::tf$shape(real_data)[1]
+    random_latent_vectors <- tensorflow::tf$random$normal(shape = c(batch_size, self$latent_dim))
     generated_data <- self$generator(random_latent_vectors)
-    combined_data <- tf$concat(list(generated_data, real_data), axis = 0L)
-    labels <- tf$concat(list(tf$ones(tuple(batch_size, 1L)),
-                             tf$zeros(tuple(batch_size, 1L))), axis = 0L)
-    labels <- labels + tf$random$uniform(tf$shape(labels), maxval = 0.01)
+    combined_data <- tensorflow::tf$concat(list(generated_data, real_data), axis = 0L)
+    labels <- tensorflow::tf$concat(list(tensorflow::tf$ones(tuple(batch_size, 1L)),
+                             tensorflow::tf$zeros(tuple(batch_size, 1L))), axis = 0L)
+    labels <- labels + tensorflow::tf$random$uniform(tensorflow::tf$shape(labels), maxval = 0.01)
     
-    with(tf$GradientTape() %as% tape, {
+    with(tensorflow::tf$GradientTape() %as% tape, {
       predictions <- self$discriminator(combined_data)
       d_loss <- self$loss_fn(labels, predictions)
     })
@@ -40,10 +40,10 @@ gan <- keras3::new_model_class(
       zip_lists(grads, self$discriminator$trainable_weights)
     )
     
-    random_latent_vectors <- tf$random$normal(shape = c(batch_size, self$latent_dim))
-    misleading_labels <- tf$zeros(tuple(batch_size, 1L))
+    random_latent_vectors <- tensorflow::tf$random$normal(shape = c(batch_size, self$latent_dim))
+    misleading_labels <- tensorflow::tf$zeros(tuple(batch_size, 1L))
     
-    with(tf$GradientTape() %as% tape, {
+    with(tensorflow::tf$GradientTape() %as% tape, {
       predictions <- random_latent_vectors |>
         self$generator() |>
         self$discriminator()
@@ -95,8 +95,8 @@ train_gan <- function(train_dat, generator_fn, discriminator_fn,
   if (!is_tf_available | !is_keras3_available)
     stop("both 'tensorflow' and 'keras3' must be installed")
   set.seed(seed)
-  set_random_seed(seed)
-  tf$random$set_seed(seed)
+  #set_random_seed(seed)
+  tensorflow::tf$random$set_seed(seed)
   
   latent_dim <- as.integer(1)
   nsyn <- nrow(train_dat)
@@ -117,7 +117,7 @@ train_gan <- function(train_dat, generator_fn, discriminator_fn,
   
   for (i in seq_len(n_iter)) {
     mod |> fit(train_dat, epochs = epochs_per_iter, batch_size = 32, verbose = 0)
-    newdat <- mod$generator(tf$random$normal(shape = c(nsyn, latent_dim)))
+    newdat <- mod$generator(tensorflow::tf$random$normal(shape = c(nsyn, latent_dim)))
     utils::setTxtProgressBar(pb, i)
   }
   elapsed <- proc.time()[3] - start

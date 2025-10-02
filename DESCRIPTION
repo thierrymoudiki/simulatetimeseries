@@ -1,7 +1,8 @@
 Package: simulatetimeseries
 Type: Package
 Title: Time Series dataset collection (real-world and synthetic)
-Version: 0.1.0
+Version: 0.2.1
+Date: 2025-10-02
 Authors@R: c(
     person(
       "T.", "Moudiki",
@@ -26,9 +27,12 @@ Imports:
     fpp2,
     MASS,
     tswge,
-    Rcpp
+    Rcpp,
+    misc,
+    tensorflow
 LinkingTo: Rcpp
 Suggests: rugarch, keras3, tensorflow
 RoxygenNote: 7.3.2
 Depends: 
-    R (>= 3.5)
+    R (>= 3.5), keras3
+Remotes: thierrymoudiki/misc

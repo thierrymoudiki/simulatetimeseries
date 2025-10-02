@@ -1,0 +1,36 @@
+---
+title: "Simple GAN simulation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simple GAN simulation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+library(simulatetimeseries)
+```
+
+
+```{r, fig.width = 7.5}
+# 1. Unimodal data
+unimodal_data <- matrix(rnorm(1000, mean = 2, sd = 4))
+synthetic1 <- rgan(unimodal_data, n = 500, p = 1, type_input = "unimodal")
+ks.test(unimodal_data, synthetic1)
+
+# 2. Mixture data  
+mixture <- rbinom(1000, 1, 0.5)
+mixture_data <- matrix(mixture * rnorm(1000, 2, 1) + (1-mixture) * rnorm(1000, 8, 2))
+synthetic2 <- rgan(mixture_data, n = 500, p = 1, type_input = "mixture")
+ks.test(unimodal_data, synthetic2)
+
+# 3. Financial data
+unimodal_data <- diff(log(EuStockMarkets[1:500, 1]))
+synthetic3 <- rgan(unimodal_data, n = 500, p = 1, type_input = "financial")
+ks.test(unimodal_data, synthetic3)
+
+# 4. Automatic detection
+(synthetic_auto <- rgan_auto(unimodal_data, n = 500, p = 1))
+```
+
+
