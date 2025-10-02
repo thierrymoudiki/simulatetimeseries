@@ -13,7 +13,7 @@
 #' @export
 martingale_test <- function(x)
 {
-
+ diff_x <- diff(x)
  foo <- function(j)
   {
     res <- try(summary(lm(y ~ trend - 1, 
